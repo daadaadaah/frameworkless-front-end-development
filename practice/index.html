@@ -19,15 +19,15 @@
         <section class="main">
             <input id="toggle-all" class="toggle-all" type="checkbox">
             <label for="toggle-all">Mark all as complete</label>
-            <ul class="todo-list">
+            <ul class="todo-list" data-component="todos">
                 <!-- TODO 리스트 추가됨 -->
             </ul>
         </section>
         <footer class="footer">
             <!-- 완료되지 않은 todo 수를 가진 span -->
-            <span class="todo-count">1 Item Left</span>
+            <span class="todo-count" data-component="counter" >1 Item Left</span>
 
-            <ul class="filters">
+            <ul class="filters" data-component="filters">
                 <li>
                     <a href="#/">All</a>
                 </li>
