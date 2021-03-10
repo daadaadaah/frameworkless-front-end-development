@@ -1,13 +1,6 @@
+import eventCreators from '../model/eventCreators.js'
+
 let template
-
-const allTodosCompleted = todos => {
-  if (todos.length === 0) {
-    return false
-  }
-  return !todos.find(t => !t.completed)
-}
-
-const noCompletedItemIsPresent = todos => !todos.find(t => t.completed)
 
 const getTemplate = () => {
   if (!template) {
@@ -20,50 +13,26 @@ const getTemplate = () => {
     .cloneNode(true)
 }
 
-const addEvents = (targetElement, events) => {
-  const { clearCompleted, completeAll, addItem } = events
-
+const addEvents = (targetElement, dispatch) => {
   targetElement
     .querySelector('.new-todo')
     .addEventListener('keypress', e => {
       if (e.key === 'Enter') {
-        addItem(e.target.value)
+        const event = eventCreators
+          .addItem(e.target.value)
+        dispatch(event)
         e.target.value = ''
       }
     })
-
-  targetElement
-    .querySelector('input.toggle-all')
-    .addEventListener('click', completeAll)
-
-  targetElement
-    .querySelector('.clear-completed')
-    .addEventListener('click', clearCompleted)
 }
 
-export default (targetElement, state, events) => {
+export default (targetElement, state, dispatch) => {
   const newApp = targetElement.cloneNode(true)
 
   newApp.innerHTML = ''
   newApp.appendChild(getTemplate())
 
-  if (noCompletedItemIsPresent(state.todos)) {
-    newApp
-      .querySelector('.clear-completed')
-      .classList
-      .add('hidden')
-  } else {
-    newApp
-      .querySelector('.clear-completed')
-      .classList
-      .remove('hidden')
-  }
-
-  newApp
-    .querySelector('input.toggle-all')
-    .checked = allTodosCompleted(state.todos)
-
-  addEvents(newApp, events)
+  addEvents(newApp, dispatch)
 
   return newApp
 }

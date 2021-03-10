@@ -1,4 +1,6 @@
-export default (targetElement, { currentFilter }, { changeFilter }) => {
+import eventCreators from '../model/eventCreators.js'
+
+export default (targetElement, { currentFilter }, dispatch) => {
   const newFilters = targetElement.cloneNode(true)
 
   Array
@@ -12,7 +14,7 @@ export default (targetElement, { currentFilter }, { changeFilter }) => {
 
       a.addEventListener('click', e => {
         e.preventDefault()
-        changeFilter(a.textContent)
+        dispatch(eventCreators.changeFilter(a.textContent))
       })
     })
 

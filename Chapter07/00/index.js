@@ -6,6 +6,7 @@ import applyDiff from './applyDiff.js'
 
 import registry from './registry.js'
 
+import eventBusFactory from './model/eventBus.js'
 import modelFactory from './model/model.js'
 
 registry.add('app', appView)
@@ -14,11 +15,7 @@ registry.add('counter', counterView)
 registry.add('filters', filtersView)
 
 const model = modelFactory()
-
-const {
-  addChangeListener,
-  ...events
-} = model
+const eventBus = eventBusFactory(model)
 
 const render = (state) => {
   window.requestAnimationFrame(() => {
@@ -27,10 +24,12 @@ const render = (state) => {
     const newMain = registry.renderRoot(
       main,
       state,
-      events)
+      eventBus.dispatch)
 
     applyDiff(document.body, main, newMain)
   })
 }
 
-addChangeListener(render)
+eventBus.subscribe(render)
+
+render(eventBus.getState())
