@@ -1,3 +1,5 @@
+import actionCreators from '../model/actionCreators.js'
+
 let template
 
 const allTodosCompleted = todos => {
@@ -20,28 +22,30 @@ const getTemplate = () => {
     .cloneNode(true)
 }
 
-const addEvents = (targetElement, events) => {
-  const { clearCompleted, completeAll, addItem } = events
-
+const addEvents = (targetElement, dispatch) => {
   targetElement
     .querySelector('.new-todo')
     .addEventListener('keypress', e => {
       if (e.key === 'Enter') {
-        addItem(e.target.value)
+        dispatch(actionCreators.addItem(e.target.value))
         e.target.value = ''
       }
     })
 
   targetElement
     .querySelector('input.toggle-all')
-    .addEventListener('click', completeAll)
+    .addEventListener('click', () => {
+      dispatch(actionCreators.completeAll())
+    })
 
   targetElement
     .querySelector('.clear-completed')
-    .addEventListener('click', clearCompleted)
+    .addEventListener('click', () => {
+      dispatch(actionCreators.clearCompleted())
+    })
 }
 
-export default (targetElement, state, events) => {
+export default (targetElement, state, dispatch) => {
   const newApp = targetElement.cloneNode(true)
 
   newApp.innerHTML = ''
@@ -63,7 +67,7 @@ export default (targetElement, state, events) => {
     .querySelector('input.toggle-all')
     .checked = allTodosCompleted(state.todos)
 
-  addEvents(newApp, events)
+  addEvents(newApp, dispatch)
 
   return newApp
 }

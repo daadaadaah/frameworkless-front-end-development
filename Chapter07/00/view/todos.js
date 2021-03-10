@@ -1,3 +1,5 @@
+import actionCreators from '../model/actionCreators.js'
+
 let template
 
 const createNewTodoNode = () => {
@@ -11,16 +13,23 @@ const createNewTodoNode = () => {
     .cloneNode(true)
 }
 
-const attachEventsToTodoElement = (element, index, events) => {
-  const handler = e => events.deleteItem(index)
+const attachEventsToTodoElement = (element, index, dispatch) => {
+  const deleteHandler = e => dispatch(actionCreators.deleteItem(parseInt(index)))
+  const toggleHandler = e => dispatch(actionCreators.toggleItemCompleted(index))
+  const updateHandler = e => {
+    if (e.key === 'Enter') {
+      element.classList.remove('editing')
+      dispatch(actionCreators.updateItem(index, e.target.value))
+    }
+  }
 
   element
     .querySelector('button.destroy')
-    .addEventListener('click', handler)
+    .addEventListener('click', deleteHandler)
 
   element
     .querySelector('input.toggle')
-    .addEventListener('click', e => events.toggleItemCompleted(index))
+    .addEventListener('click', toggleHandler)
 
   element
     .addEventListener('dblclick', () => {
@@ -31,15 +40,10 @@ const attachEventsToTodoElement = (element, index, events) => {
 
   element
     .querySelector('input.edit')
-    .addEventListener('keypress', e => {
-      if (e.key === 'Enter') {
-        element.classList.remove('editing')
-        events.updateItem(index, e.target.value)
-      }
-    })
+    .addEventListener('keypress', updateHandler)
 }
 
-const getTodoElement = (todo, index, events) => {
+const getTodoElement = (todo, index, dispatch) => {
   const {
     text,
     completed
@@ -57,7 +61,7 @@ const getTodoElement = (todo, index, events) => {
       .checked = true
   }
 
-  attachEventsToTodoElement(element, index, events)
+  attachEventsToTodoElement(element, index, dispatch)
 
   return element
 }
@@ -75,7 +79,7 @@ const filterTodos = (todos, filter) => {
   return [...todos]
 }
 
-export default (targetElement, state, events) => {
+export default (targetElement, state, dispatch) => {
   const { todos, currentFilter } = state
   const newTodoList = targetElement.cloneNode(true)
 
@@ -84,7 +88,7 @@ export default (targetElement, state, events) => {
   const filteredTodos = filterTodos(todos, currentFilter)
 
   filteredTodos
-    .map((todo, index) => getTodoElement(todo, index, events))
+    .map((todo, index) => getTodoElement(todo, index, dispatch))
     .forEach(element => {
       newTodoList.appendChild(element)
     })

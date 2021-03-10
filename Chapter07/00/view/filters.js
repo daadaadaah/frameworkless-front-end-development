@@ -1,4 +1,6 @@
-export default (targetElement, { currentFilter }, { changeFilter }) => {
+import actionCreators from '../model/actionCreators.js'
+
+export default (targetElement, { currentFilter }, dispatch) => {
   const newFilters = targetElement.cloneNode(true)
 
   Array
@@ -12,7 +14,7 @@ export default (targetElement, { currentFilter }, { changeFilter }) => {
 
       a.addEventListener('click', e => {
         e.preventDefault()
-        changeFilter(a.textContent)
+        dispatch(actionCreators.changeFilter(a.textContent))
       })
     })
 

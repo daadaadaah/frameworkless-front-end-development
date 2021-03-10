@@ -6,57 +6,41 @@ import applyDiff from './applyDiff.js'
 
 import registry from './registry.js'
 
-import modelFactory from './model/model.js'
+import reducer from './model/reducer.js'
 
 registry.add('app', appView)
 registry.add('todos', todosView)
 registry.add('counter', counterView)
 registry.add('filters', filtersView)
 
-const model = modelFactory()
-
-const events = {
-  addItem: text => {
-    model.addItem(text)
-    render(model.getState())
-  },
-  updateItem: (index, text) => {
-    model.updateItem(index, text)
-    render(model.getState())
-  },
-  deleteItem: (index) => {
-    model.deleteItem(index)
-    render(model.getState())
-  },
-  toggleItemCompleted: (index) => {
-    model.toggleItemCompleted(index)
-    render(model.getState())
-  },
-  completeAll: () => {
-    model.completeAll()
-    render(model.getState())
-  },
-  clearCompleted: () => {
-    model.clearCompleted()
-    render(model.getState())
-  },
-  changeFilter: filter => {
-    model.changeFilter(filter)
-    render(model.getState())
-  }
+const INITIAL_STATE = {
+  todos: [],
+  currentFilter: 'All'
 }
 
-const render = (state) => {
+const {
+  createStore
+} = Redux
+
+const store = createStore(
+  reducer,
+  INITIAL_STATE,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
+
+const render = () => {
   window.requestAnimationFrame(() => {
     const main = document.querySelector('#root')
 
     const newMain = registry.renderRoot(
       main,
-      state,
-      events)
+      store.getState(),
+      store.dispatch)
 
     applyDiff(document.body, main, newMain)
   })
 }
 
-render(model.getState())
+store.subscribe(render)
+
+render()
