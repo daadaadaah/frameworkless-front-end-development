@@ -1,19 +1,3 @@
-
-
-
-const parseResponse = async response => {
-  const { status } = response
-  let data
-  if (status !== 204) {
-    data = await response.json()
-  }
-
-  return {
-    status,
-    data
-  }
-}
-
 const request = async params => {
 
   const {
@@ -24,17 +8,13 @@ const request = async params => {
   } = params
 
   const config = {
+    url,
     method,
-    headers: new window.Headers(headers)
+    headers,
+    data: body
   }
 
-  if (body) {
-    config.body = JSON.stringify(body)
-  }
-
-  const response = await window.fetch(url, config)
-
-  return parseResponse(response)
+  return axios(config)
 }
 
 const get = async (url, headers) => {
